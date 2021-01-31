@@ -11,7 +11,9 @@ import { Team } from '@root/models/Team';
 export class TournamentResolver {
   @Query(() => [Tournament])
   async Tournaments() {
-    const tournament = await Tournament.find({ relations: ['teams'] });
+    const tournament = await Tournament.find({
+      relations: ['teams'],
+    });
     return tournament;
   }
 
@@ -38,15 +40,23 @@ export class TournamentResolver {
   @Mutation(() => Tournament)
   async UpdateTournament(
     @Arg('ID') id: number,
-    @Arg('data') data: UpdateTournamentInput
+    @Arg('data', { nullable: true }) data?: UpdateTournamentInput,
+    @Arg('winnderID', { nullable: true }) winnerID?: number
   ) {
     const tournament = await Tournament.findOne({
       where: { id },
       relations: ['teams'],
     });
     if (!tournament) throw new Error('tournament not found!');
+    if (winnerID) {
+      const winnerTeam = await Team.findOne({ where: { id: winnerID } });
 
-    Object.assign(tournament, data);
+      if (!winnerTeam) throw new Error('WinnerID not found');
+
+      tournament.winner = winnerTeam;
+    }
+
+    if (data) Object.assign(tournament, data);
 
     await tournament.save();
     return tournament;

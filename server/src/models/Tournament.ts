@@ -6,6 +6,7 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Team } from './Team';
@@ -48,6 +49,10 @@ export class Tournament extends BaseEntity {
   @Field(() => Status)
   @Column({ default: Status.scheduled })
   status!: Status;
+
+  @Field(() => Team, { nullable: true })
+  @ManyToOne(() => Team, (team) => team.id)
+  winner!: Team;
 
   @Field(() => [Team])
   @ManyToMany((type) => Team, (team) => team.tournaments)

@@ -1,6 +1,7 @@
 import { Field, ID, InputType, Int } from 'type-graphql';
 
 import { Status, Tournament } from '@root/models/Tournament';
+import { Team } from '@root/models/Team';
 
 @InputType()
 export class TournamentInput implements Partial<Tournament> {
