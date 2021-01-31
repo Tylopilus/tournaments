@@ -1,4 +1,4 @@
-import { Arg, Mutation, Query, Resolver } from 'type-graphql';
+import { Arg, Authorized, Mutation, Query, Resolver } from 'type-graphql';
 
 // import { Tournament } from '@root/models/Tournament';
 import { Tournament } from '@root/models/Tournament';
@@ -26,6 +26,7 @@ export class TournamentResolver {
     return tournament;
   }
 
+  @Authorized()
   @Mutation(() => Tournament)
   async CreateTournament(@Arg('data') data: TournamentInput) {
     const tournament = Tournament.create(data);
