@@ -1,5 +1,5 @@
 import { TeamInput } from '@root/input/TeamInput';
-import { Field, ID, InputType, ObjectType } from 'type-graphql';
+import { Field, ID, Int, ObjectType, registerEnumType } from 'type-graphql';
 import {
   BaseEntity,
   Column,
@@ -9,6 +9,18 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Team } from './Team';
+
+export enum Status {
+  scheduled = 'scheduled',
+  openForRegistration = 'open for registration',
+  groupPhase = 'group phase',
+  eliminationPhase = 'elimination phase',
+  done = 'done',
+}
+
+registerEnumType(Status, {
+  name: 'Status',
+});
 
 @Entity()
 @ObjectType()
@@ -24,6 +36,18 @@ export class Tournament extends BaseEntity {
   @Field(() => Date)
   @Column()
   date!: Date;
+
+  @Field(() => Int)
+  @Column({ default: 64 })
+  maxTeams!: number;
+
+  @Field(() => Int)
+  @Column({ default: 0 })
+  currentTeams!: number;
+
+  @Field(() => Status)
+  @Column({ default: Status.scheduled })
+  status!: Status;
 
   @Field(() => [Team])
   @ManyToMany((type) => Team, (team) => team.tournaments)

@@ -1,7 +1,6 @@
-import { Team } from '@root/models/Team';
-import { Tournament } from '@root/models/Tournament';
-import { Field, ID, InputType } from 'type-graphql';
-import { TeamInput } from './TeamInput';
+import { Field, ID, InputType, Int } from 'type-graphql';
+
+import { Status, Tournament } from '@root/models/Tournament';
 
 @InputType()
 export class TournamentInput implements Partial<Tournament> {
@@ -10,10 +9,19 @@ export class TournamentInput implements Partial<Tournament> {
 
   @Field(() => Date, { nullable: true, defaultValue: new Date(Date.now()) })
   date?: Date;
+
+  @Field(() => Int, { nullable: true })
+  maxTeams?: number;
 }
 
 @InputType()
 export class UpdateTournamentInput implements Partial<Tournament> {
   @Field(() => String, { nullable: true })
   title?: string;
+
+  @Field(() => Int, { nullable: true })
+  maxTeams?: number;
+
+  @Field(() => Status, { nullable: true })
+  status?: Status;
 }
