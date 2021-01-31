@@ -1,0 +1,7 @@
+{
+  "name": "tournament",
+  "version": "1.0.0",
+  "author": "Helge Ahrens",
+  "main": "index.js",
+  "license": "MIT"
+}
