@@ -21,7 +21,7 @@ export class TournamentResolver {
   async Tournament(@Arg('id') id: number) {
     const tournament = Tournament.findOne({
       where: { id },
-      relations: ['teams'],
+      relations: ['teams', 'winner'],
     });
     if (!tournament) throw new Error('cannt find tournament');
 
@@ -45,7 +45,7 @@ export class TournamentResolver {
   ) {
     const tournament = await Tournament.findOne({
       where: { id },
-      relations: ['teams'],
+      relations: ['teams', 'winner'],
     });
     if (!tournament) throw new Error('tournament not found!');
     if (winnerID) {
@@ -69,7 +69,7 @@ export class TournamentResolver {
   ) {
     const tournament = await Tournament.findOne({
       where: { id: tournamentID },
-      relations: ['teams'],
+      relations: ['teams', 'winner'],
     });
     if (!tournament) throw new Error('tournament not found!');
 
