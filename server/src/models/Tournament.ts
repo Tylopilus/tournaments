@@ -1,27 +1,19 @@
-import { TeamInput } from '@root/input/TeamInput';
-import { Field, ID, Int, ObjectType, registerEnumType } from 'type-graphql';
+import { Status } from '@root/Enums/Status';
+import { Field, ID, Int, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { GroupStage } from './GroupStage';
+import { PlayOffs } from './PlayOffs';
 import { Team } from './Team';
-
-export enum Status {
-  scheduled = 'scheduled',
-  openForRegistration = 'open for registration',
-  groupPhase = 'group phase',
-  eliminationPhase = 'elimination phase',
-  done = 'done',
-}
-
-registerEnumType(Status, {
-  name: 'Status',
-});
 
 @Entity()
 @ObjectType()
@@ -58,4 +50,13 @@ export class Tournament extends BaseEntity {
   @ManyToMany((type) => Team, (team) => team.tournaments)
   @JoinTable()
   teams!: Team[];
+
+  @Field(() => [GroupStage])
+  @ManyToOne(() => GroupStage, (groupStage) => groupStage.tournament)
+  groupStages!: [GroupStage];
+
+  @Field(() => PlayOffs)
+  @OneToOne(() => PlayOffs, (playOffs) => playOffs.tournament)
+  @JoinColumn()
+  playOff!: PlayOffs;
 }

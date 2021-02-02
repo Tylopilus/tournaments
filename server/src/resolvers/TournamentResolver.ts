@@ -12,7 +12,7 @@ export class TournamentResolver {
   @Query(() => [Tournament])
   async Tournaments() {
     const tournament = await Tournament.find({
-      relations: ['teams'],
+      relations: ['teams', 'winner', 'playoff', 'groupStages'],
     });
     return tournament;
   }

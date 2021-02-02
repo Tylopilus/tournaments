@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { ApolloServer } from 'apollo-server';
-import { AuthChecker, buildSchema } from 'type-graphql';
+import { buildSchema } from 'type-graphql';
 import { createConnection } from 'typeorm';
 import { TournamentResolver } from './resolvers/TournamentResolver';
 import { TeamResolver } from './resolvers/TeamResolver';
@@ -9,7 +9,7 @@ async function main() {
   createConnection();
   const schema = await buildSchema({
     resolvers: [TournamentResolver, TeamResolver],
-    authChecker: ({ context, args, info, root }) => {
+    authChecker: ({ context }) => {
       return context.req.headers.user === 'peterFox';
     },
   });

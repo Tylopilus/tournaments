@@ -4,8 +4,12 @@ import {
   Column,
   Entity,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Groups } from './Groups';
+import { Matches } from './Matches';
+import { PlayOffs } from './PlayOffs';
 import { Tournament } from './Tournament';
 
 @Entity()
@@ -34,4 +38,20 @@ export class Team extends BaseEntity {
   @Field(() => [Tournament], { defaultValue: [] })
   @ManyToMany(() => Tournament, (tournament) => tournament.teams)
   tournaments!: Tournament[];
+
+  @Field(() => [PlayOffs], { nullable: true })
+  @ManyToOne(() => PlayOffs, (playOffs) => playOffs.winner)
+  playOffsWinner!: [PlayOffs];
+
+  @Field(() => Groups, { nullable: true })
+  @ManyToOne(() => Groups, (group) => group.advancingTeams)
+  advancedInGroup!: Groups;
+
+  @Field(() => [Matches], { nullable: true })
+  @ManyToMany(() => Matches, (matches) => matches.teams)
+  matches!: Matches[];
+
+  @Field(() => [Matches], { nullable: true })
+  @ManyToOne(() => Matches, (matches) => matches.winner)
+  wonMatches!: Matches[];
 }
