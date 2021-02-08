@@ -51,9 +51,10 @@ export class Tournament extends BaseEntity {
   @JoinTable()
   teams!: Team[];
 
-  @Field(() => [GroupStage])
-  @ManyToOne(() => GroupStage, (groupStage) => groupStage.tournament)
-  groupStages!: [GroupStage];
+  @Field(() => GroupStage)
+  @OneToOne(() => GroupStage, (groupStage) => groupStage.tournament)
+  @JoinColumn()
+  groupStages!: GroupStage;
 
   @Field(() => PlayOffs)
   @OneToOne(() => PlayOffs, (playOffs) => playOffs.tournament)

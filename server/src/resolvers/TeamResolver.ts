@@ -7,7 +7,7 @@ import { Arg, Mutation, Query, Resolver } from 'type-graphql';
 export class TeamResolver {
   @Query(() => [Team])
   Teams() {
-    return Team.find({ relations: ['tournaments'] });
+    return Team.find({ relations: ['tournaments', 'group'] });
   }
 
   @Query(() => Team)

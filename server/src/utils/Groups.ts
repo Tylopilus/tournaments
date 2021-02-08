@@ -1,3 +1,6 @@
+import { Groups } from '@root/models/Groups';
+import { Team } from '@root/models/Team';
+
 const groups = [
   {
     id: 1,
@@ -80,28 +83,32 @@ const final = [
 
 // console.log(final[0]);
 
-const groupCount = 2;
-
-function generateSingleGroup(modulo, offset, groupObject) {
-  const group = groupObject
+function generateSingleGroup(
+  modulo: number,
+  offset: number,
+  groupObject: Team[]
+) {
+  const teams = groupObject
     .slice(offset, groupObject.length)
-    .reduce((result, group, index) => {
+    .reduce<Team[]>((prev, curr, index) => {
       //   !(index % modulo) ? result.push(group) : null;
-      if (!(index % modulo)) return [...result, group];
-      return result;
+      if (!(index % modulo)) return [...prev, curr];
+      return prev;
     }, []);
 
-  return { id: `group${offset}`, teams: group };
+  return { teams };
 }
 
-function generateGroups(groupCount, groupObject) {
+export function generateGroups(groupCount: number, groupObject: Team[]) {
   const result = [];
   for (let i = 0; i < groupCount; i++) {
     result.push(generateSingleGroup(groupCount, i, groupObject));
+    // result.push(groupObject);
   }
   return result;
 }
-console.log(JSON.stringify(generateGroups(groupCount, groups), null, 2));
+
+// console.log(JSON.stringify(generateGroups(groupCount, groups), null, 2));
 
 // const shuffeld = groups.sort(() => Math.random() - 0.5);
 

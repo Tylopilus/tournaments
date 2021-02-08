@@ -6,6 +6,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { GroupStage } from './GroupStage';
 import { Matches } from './Matches';
 import { Team } from './Team';
 
@@ -16,11 +17,19 @@ export class Groups extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Field(() => [Team])
+  @Field(() => [Team], { defaultValue: [] })
+  @OneToMany(() => Team, (team) => team.group)
+  teams!: Team[];
+
+  @Field(() => [Team], { nullable: true })
   @OneToMany(() => Team, (teams) => teams.advancedInGroup)
   advancingTeams!: Team[];
 
-  @Field(() => [Matches])
+  @Field(() => [Matches], { nullable: true })
   @ManyToOne(() => Matches, (matches) => matches.group)
   matches!: Matches[];
+
+  @Field(() => GroupStage)
+  @OneToMany(() => GroupStage, (groupStage) => groupStage.groups)
+  groupStage!: GroupStage;
 }

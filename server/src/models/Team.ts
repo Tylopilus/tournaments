@@ -5,6 +5,7 @@ import {
   Entity,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Groups } from './Groups';
@@ -54,4 +55,8 @@ export class Team extends BaseEntity {
   @Field(() => [Matches], { nullable: true })
   @ManyToOne(() => Matches, (matches) => matches.winner)
   wonMatches!: Matches[];
+
+  @Field(() => Groups, { nullable: true })
+  @ManyToOne(() => Groups, (group) => group.teams)
+  group!: Groups;
 }

@@ -49,11 +49,11 @@ export class Matches extends BaseEntity {
   @OneToMany(() => Team, (team) => team.wonMatches)
   winner!: Team;
 
-  @Field(() => Groups)
-  @OneToMany(() => Groups, (groups) => groups.matches)
-  group!: Groups;
+  @Field(() => Groups, { nullable: true })
+  @OneToMany(() => Groups, (groups) => groups.matches, { nullable: true })
+  group?: Groups;
 
-  @Field(() => PlayOffs)
-  @OneToMany(() => PlayOffs, (playOff) => playOff.matches)
-  playOff!: PlayOffs;
+  @Field(() => PlayOffs, { nullable: true })
+  @OneToMany(() => PlayOffs, (playOff) => playOff.matches, { nullable: true })
+  playOff?: PlayOffs;
 }

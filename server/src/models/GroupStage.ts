@@ -3,9 +3,12 @@ import {
   BaseEntity,
   Column,
   Entity,
+  ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Groups } from './Groups';
 import { Tournament } from './Tournament';
 
 @Entity()
@@ -20,6 +23,10 @@ export class GroupStage extends BaseEntity {
   advancePerGroup!: number;
 
   @Field(() => Tournament)
-  @OneToMany(() => Tournament, (tournament) => tournament.groupStages)
+  @OneToOne(() => Tournament, (tournament) => tournament.groupStages)
   tournament!: Tournament;
+
+  @Field(() => [Groups])
+  @ManyToOne(() => Groups, (groups) => groups.groupStage)
+  groups!: Groups[];
 }
