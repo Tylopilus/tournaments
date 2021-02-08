@@ -1,10 +1,9 @@
 import { Groups } from '@root/models/Groups';
 import { Team } from '@root/models/Team';
 import { Tournament } from '@root/models/Tournament';
-import { generateGroups } from '@root/utils/Groups';
+import { GenerateGroups } from '@root/utils/GenerateGroups';
 import { Arg, Query, Resolver } from 'type-graphql';
 import { createQueryBuilder } from 'typeorm';
-import { TournamentResolver } from './TournamentResolver';
 
 @Resolver()
 export class GroupsResolver {
@@ -18,7 +17,7 @@ export class GroupsResolver {
       where: { id },
       relations: ['teams'],
     });
-    const groups = generateGroups(2, teams);
+    const groups = GenerateGroups(2, teams);
     return groups.map(async (group) => {
       const tgroup = Groups.create();
       tgroup.teams = group.teams;
