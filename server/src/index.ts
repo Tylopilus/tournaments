@@ -5,11 +5,17 @@ import { createConnection } from 'typeorm';
 import { TournamentResolver } from './resolvers/TournamentResolver';
 import { TeamResolver } from './resolvers/TeamResolver';
 import { GroupsResolver } from './resolvers/GroupsResolver';
+import { GroupStageResolver } from './resolvers/GroupStageResolver';
 
 async function main() {
   createConnection();
   const schema = await buildSchema({
-    resolvers: [TournamentResolver, TeamResolver, GroupsResolver],
+    resolvers: [
+      TournamentResolver,
+      TeamResolver,
+      GroupsResolver,
+      GroupStageResolver,
+    ],
     authChecker: ({ context }) => {
       return context.req.headers.user === 'peterFox';
     },

@@ -9,6 +9,7 @@ import {
 import { GroupStage } from './GroupStage';
 import { Matches } from './Matches';
 import { Team } from './Team';
+import { Tournament } from './Tournament';
 
 @Entity()
 @ObjectType()
@@ -32,4 +33,7 @@ export class Groups extends BaseEntity {
   @Field(() => GroupStage)
   @OneToMany(() => GroupStage, (groupStage) => groupStage.groups)
   groupStage!: GroupStage;
+
+  @ManyToOne(() => Tournament, (tournament) => tournament.groups)
+  tournament!: Tournament;
 }

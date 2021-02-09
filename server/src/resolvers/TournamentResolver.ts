@@ -1,4 +1,15 @@
-import { Arg, Authorized, Mutation, Query, Resolver } from 'type-graphql';
+import {
+  Arg,
+  Authorized,
+  ConflictingDefaultWithNullableError,
+  FieldResolver,
+  Int,
+  Mutation,
+  Query,
+  Resolver,
+  ResolverInterface,
+  Root,
+} from 'type-graphql';
 
 import { Tournament } from '@root/models/Tournament';
 import {
@@ -6,13 +17,21 @@ import {
   UpdateTournamentInput,
 } from '@root/input/TournamentInput';
 import { Team } from '@root/models/Team';
+import { Status } from '@root/Enums/Status';
+import { ApolloError } from 'apollo-server';
+import { GroupStage } from '@root/models/GroupStage';
 
-@Resolver()
-export class TournamentResolver {
+@Resolver(() => Tournament)
+export class TournamentResolver implements ResolverInterface<Tournament> {
+  @FieldResolver()
+  async winner() {
+    const winner = await Team.findOne({ where: { id: 1 } });
+    return winner ? winner : null;
+  }
   @Query(() => [Tournament])
   async Tournaments() {
     const tournament = await Tournament.find({
-      relations: ['teams', 'winner', 'playOff', 'groupStages'],
+      relations: ['teams', 'playOff', 'groupStage', 'groups'],
     });
     return tournament;
   }
@@ -30,31 +49,30 @@ export class TournamentResolver {
 
   @Authorized()
   @Mutation(() => Tournament)
-  async CreateTournament(@Arg('data') data: TournamentInput) {
+  async CreateTournament(
+    @Arg('data') data: TournamentInput,
+    @Arg('advancingTeams') advancingTeams: number
+  ) {
     const tournament = Tournament.create(data);
     await tournament.save();
 
+    const groupStage = GroupStage.create();
+    groupStage.advancePerGroup = advancingTeams;
+    await groupStage.save();
     return tournament;
   }
 
+  @Authorized()
   @Mutation(() => Tournament)
   async UpdateTournament(
     @Arg('ID') id: number,
-    @Arg('data', { nullable: true }) data?: UpdateTournamentInput,
-    @Arg('winnderID', { nullable: true }) winnerID?: number
+    @Arg('data', { nullable: true }) data?: UpdateTournamentInput
   ) {
     const tournament = await Tournament.findOne({
       where: { id },
       relations: ['teams', 'winner'],
     });
     if (!tournament) throw new Error('tournament not found!');
-    if (winnerID) {
-      const winnerTeam = await Team.findOne({ where: { id: winnerID } });
-
-      if (!winnerTeam) throw new Error('WinnerID not found');
-
-      tournament.winner = winnerTeam;
-    }
 
     if (data) Object.assign(tournament, data);
 
@@ -69,10 +87,14 @@ export class TournamentResolver {
   ) {
     const tournament = await Tournament.findOne({
       where: { id: tournamentID },
-      relations: ['teams', 'winner'],
+      relations: ['teams'],
     });
-    if (!tournament) throw new Error('tournament not found!');
+    if (!tournament) throw new ApolloError('tournament not found!');
 
+    if (tournament.status !== Status.openForRegistration)
+      throw new ApolloError(
+        `Tournament is not open for registration. Tournament is ${tournament.status}`
+      );
     const team = await Team.findOne({ where: { id: teamID } });
 
     if (!team) throw new Error('team not found!');

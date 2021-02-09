@@ -1,9 +1,15 @@
 import { TeamInput } from '@root/input/TeamInput';
 import { Team } from '@root/models/Team';
 import { Tournament } from '@root/models/Tournament';
-import { Arg, Mutation, Query, Resolver } from 'type-graphql';
+import {
+  Arg,
+  Mutation,
+  Query,
+  Resolver,
+  ResolverInterface,
+} from 'type-graphql';
 
-@Resolver()
+@Resolver(() => Team)
 export class TeamResolver {
   @Query(() => [Team])
   Teams() {

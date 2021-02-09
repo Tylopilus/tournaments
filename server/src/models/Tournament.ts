@@ -8,9 +8,11 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Groups } from './Groups';
 import { GroupStage } from './GroupStage';
 import { PlayOffs } from './PlayOffs';
 import { Team } from './Team';
@@ -18,46 +20,61 @@ import { Team } from './Team';
 @Entity()
 @ObjectType()
 export class Tournament extends BaseEntity {
-  @Field(() => ID)
-  @PrimaryGeneratedColumn()
-  id!: number;
-
-  @Field(() => String)
-  @Column()
-  title!: string;
-
-  @Field(() => Date)
-  @Column()
-  date!: Date;
-
   @Field(() => Int)
-  @Column({ default: 64 })
-  maxTeams!: number;
+  @Column({ default: 2 })
+  advancePerGroup!: number;
 
   @Field(() => Int)
   @Column({ default: 0 })
   currentTeams!: number;
 
+  @Field(() => Int)
+  hasManyTeams(): number {
+    return 2;
+  }
+
+  @Field(() => Date)
+  @Column()
+  date!: Date;
+
+  @Field(() => ID)
+  @PrimaryGeneratedColumn()
+  id!: number;
+
+  @Field(() => [Groups], { nullable: true })
+  @OneToMany(() => Groups, (groups) => groups.tournament)
+  groups!: Groups[];
+
+  @Field(() => GroupStage, { nullable: true })
+  @OneToOne(() => GroupStage, (groupStage) => groupStage.tournament)
+  @JoinColumn()
+  groupStage!: GroupStage;
+
+  @Field(() => GroupStage)
+  groupStages!: GroupStage;
+
+  @Field(() => Int)
+  @Column({ default: 64 })
+  maxTeams!: number;
+
+  @Field(() => PlayOffs, { nullable: true })
+  @OneToOne(() => PlayOffs, (playOffs) => playOffs.tournament)
+  @JoinColumn()
+  playOff!: PlayOffs;
+
   @Field(() => Status)
   @Column({ default: Status.scheduled })
   status!: Status;
-
-  @Field(() => Team, { nullable: true })
-  @ManyToOne(() => Team, (team) => team.id)
-  winner!: Team;
 
   @Field(() => [Team])
   @ManyToMany((type) => Team, (team) => team.tournaments)
   @JoinTable()
   teams!: Team[];
 
-  @Field(() => GroupStage)
-  @OneToOne(() => GroupStage, (groupStage) => groupStage.tournament)
-  @JoinColumn()
-  groupStages!: GroupStage;
+  @Field(() => String)
+  @Column()
+  title!: string;
 
-  @Field(() => PlayOffs)
-  @OneToOne(() => PlayOffs, (playOffs) => playOffs.tournament)
-  @JoinColumn()
-  playOff!: PlayOffs;
+  @Field(() => Team, { nullable: true })
+  winner?: Team | null;
 }

@@ -23,7 +23,7 @@ export class GroupStage extends BaseEntity {
   advancePerGroup!: number;
 
   @Field(() => Tournament)
-  @OneToOne(() => Tournament, (tournament) => tournament.groupStages)
+  @OneToOne(() => Tournament, (tournament) => tournament.groupStage)
   tournament!: Tournament;
 
   @Field(() => [Groups])
