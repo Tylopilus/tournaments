@@ -19,7 +19,7 @@ export class Groups extends BaseEntity {
   id!: number;
 
   @Field(() => [Team], { defaultValue: [] })
-  @OneToMany(() => Team, (team) => team.group)
+  @OneToMany(() => Team, (team) => team.group, { eager: true })
   teams!: Team[];
 
   @Field(() => [Team], { nullable: true })
@@ -31,9 +31,10 @@ export class Groups extends BaseEntity {
   matches!: Matches[];
 
   @Field(() => GroupStage)
-  @OneToMany(() => GroupStage, (groupStage) => groupStage.groups)
+  @ManyToOne(() => GroupStage, (groupStage) => groupStage.groups)
   groupStage!: GroupStage;
 
+  @Field(() => Tournament)
   @ManyToOne(() => Tournament, (tournament) => tournament.groups)
   tournament!: Tournament;
 }

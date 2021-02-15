@@ -1,3 +1,4 @@
+import { Status } from '@root/Enums/Status';
 import { Field, ID, Int, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
@@ -18,15 +19,17 @@ export class GroupStage extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Field(() => [Groups])
+  @OneToMany(() => Groups, (groups) => groups.groupStage)
+  groups!: Groups[];
+
+  @Field(() => Status)
+  status!: Status;
+
   @Field(() => Int)
-  @Column()
-  advancePerGroup!: number;
+  test!: number;
 
   @Field(() => Tournament)
   @OneToOne(() => Tournament, (tournament) => tournament.groupStage)
   tournament!: Tournament;
-
-  @Field(() => [Groups])
-  @ManyToOne(() => Groups, (groups) => groups.groupStage)
-  groups!: Groups[];
 }

@@ -42,16 +42,13 @@ export class Tournament extends BaseEntity {
   id!: number;
 
   @Field(() => [Groups], { nullable: true })
-  @OneToMany(() => Groups, (groups) => groups.tournament)
+  @OneToMany(() => Groups, (groups) => groups.tournament, { eager: true })
   groups!: Groups[];
 
   @Field(() => GroupStage, { nullable: true })
   @OneToOne(() => GroupStage, (groupStage) => groupStage.tournament)
   @JoinColumn()
   groupStage!: GroupStage;
-
-  @Field(() => GroupStage)
-  groupStages!: GroupStage;
 
   @Field(() => Int)
   @Column({ default: 64 })

@@ -11,27 +11,32 @@ export class GroupsResolver {
   async GenerateGroups(@Arg('tournamentId') id: number) {
     const tournament = await Tournament.findOneOrFail({
       where: { id },
-      relations: ['teams'],
+      relations: ['teams', 'groupStage', 'groups'],
     });
     if (tournament.status !== Status.openForRegistration)
       throw new ApolloError('Groups have already been generated');
 
-    const groups = GenerateGroups(2, tournament.teams);
-    const ret = groups.map(async (group) => {
-      const newGroup = Groups.create();
-      newGroup.teams = group.teams;
-      newGroup.tournament = tournament;
-      await newGroup.save();
-      return newGroup;
-    });
+    const generatedGroups = GenerateGroups(2, tournament.teams);
+    const ret = await Promise.all(
+      generatedGroups.map(async (group) => {
+        const newGroup = Groups.create();
+        newGroup.teams = group.teams;
+        newGroup.groupStage = tournament.groupStage;
+        await newGroup.save();
+        return newGroup;
+      })
+    );
 
+    console.log(ret);
     tournament.status = Status.groupPhase;
+    tournament.groups = ret;
     await tournament.save();
+    console.log(JSON.stringify(tournament, null, 2));
     return ret;
   }
 
   @Query(() => [Groups])
   async Groups() {
-    return Groups.find({ relations: ['teams'] });
+    return Groups.find({ relations: ['teams', 'tournament'] });
   }
 }

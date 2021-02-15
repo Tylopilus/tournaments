@@ -1,14 +1,11 @@
 import {
   Arg,
   Authorized,
-  ConflictingDefaultWithNullableError,
   FieldResolver,
-  Int,
   Mutation,
   Query,
   Resolver,
   ResolverInterface,
-  Root,
 } from 'type-graphql';
 
 import { Tournament } from '@root/models/Tournament';
@@ -28,11 +25,14 @@ export class TournamentResolver implements ResolverInterface<Tournament> {
     const winner = await Team.findOne({ where: { id: 1 } });
     return winner ? winner : null;
   }
+
   @Query(() => [Tournament])
   async Tournaments() {
     const tournament = await Tournament.find({
-      relations: ['teams', 'playOff', 'groupStage', 'groups'],
+      // relations: ['groups', 'groupStage', 'playOff', 'teams'],
+      relations: ['groups'],
     });
+    console.log(JSON.stringify(tournament, null, 2));
     return tournament;
   }
 
@@ -40,7 +40,7 @@ export class TournamentResolver implements ResolverInterface<Tournament> {
   async Tournament(@Arg('id') id: number) {
     const tournament = Tournament.findOne({
       where: { id },
-      relations: ['teams', 'winner'],
+      relations: ['teams'],
     });
     if (!tournament) throw new Error('cannt find tournament');
 
@@ -49,16 +49,14 @@ export class TournamentResolver implements ResolverInterface<Tournament> {
 
   @Authorized()
   @Mutation(() => Tournament)
-  async CreateTournament(
-    @Arg('data') data: TournamentInput,
-    @Arg('advancingTeams') advancingTeams: number
-  ) {
-    const tournament = Tournament.create(data);
-    await tournament.save();
-
+  async CreateTournament(@Arg('data') data: TournamentInput) {
     const groupStage = GroupStage.create();
-    groupStage.advancePerGroup = advancingTeams;
+    const tournament = Tournament.create(data);
+
+    tournament.groupStage = groupStage;
+
     await groupStage.save();
+    await tournament.save();
     return tournament;
   }
 
@@ -70,7 +68,7 @@ export class TournamentResolver implements ResolverInterface<Tournament> {
   ) {
     const tournament = await Tournament.findOne({
       where: { id },
-      relations: ['teams', 'winner'],
+      relations: ['teams'],
     });
     if (!tournament) throw new Error('tournament not found!');
 
